@@ -1,4 +1,5 @@
 use serde::{Serialize, Deserialize};
+use clap::ValueEnum;
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub enum Status {
@@ -6,7 +7,7 @@ pub enum Status {
     Completed,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone, ValueEnum)]
 pub enum Priority {
     High,
     Medium,
@@ -19,7 +20,7 @@ pub struct Task {
     pub task: String,
     pub priority: Priority,
     pub status: Status,
-    pub tags: Vec<String>,
+    pub tags: Option<Vec<String>>,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]

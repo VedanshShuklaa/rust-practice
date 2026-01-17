@@ -25,6 +25,9 @@ enum Commands {
     },
     Add {
         task: String,
+        priority: Priority,
+        #[arg(short, long)]
+        tags: Option<Vec<String>>
     },
     List {},
     Complete {
@@ -71,7 +74,7 @@ fn main() {
             }
         }
 
-        Commands::Add { task } => {
+        Commands::Add { task, priority, tags } => {
             if let Some(cur) = db.current.clone() {
                 let username = cur.user;
                 if let Some(user_mut) = find_user_mut(&mut db, &username) {
@@ -79,9 +82,9 @@ fn main() {
                     user_mut.tasks.push(Task {
                         id,
                         task,
-                        priority: Priority::Medium,
+                        priority,
                         status: Status::Pending,
-                        tags: vec![],
+                        tags
                     });
                     db.current = Some(user_mut.clone());
                     save_db(&db);
@@ -98,7 +101,10 @@ fn main() {
             if let Some(cur) = &db.current {
                 if let Some(user_ref) = find_user(&db, &cur.user) {
                     for t in &user_ref.tasks {
-                        println!("[{}] {:?} - {}", t.id, t.status, t.task);
+                        println!("[{}] {:?} - {} - {} - Priority: {:?}", t.id, t.status, t.task, match &t.tags {
+                            Some(tags) => tags.join(", "),
+                            None => String::from("None")
+                        }, t.priority);
                     }
                 } else {
                     println!("Current user not found");
